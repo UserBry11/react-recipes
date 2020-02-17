@@ -1,9 +1,13 @@
+/*
+*   Recipe App on Sun Feb 16 2020 22:24:39
+*   Author: Bryan Fernandez
+*/
+
 const express = require('express'),
     path = require('path'),
     bodyParser = require('body-parser'),
     cons = require('consolidate'),
     dust = require('dustjs-helpers'),
-    pg = require('pg'),
     app = express();
 
 
@@ -17,6 +21,8 @@ const client = new Client({
 
 client.connect()
 .then(() => console.log("Connected successfully"))
+.catch(error => console.log(error))
+// .finally(() => client.end())
 
 // execute()
 // async function execute(){
@@ -38,52 +44,34 @@ client.connect()
 // }
 
 
-// client.connect()
-// .then(() => console.log("connected successfully!"))
-// // .then(() => client.query("INSERT into recipes values ($1, $2, $3, $4)", [10, 'Jimmy', 'QEWRQEWRE', '1,adslf ,al;f2 kldfa;kdaf' ]))
-// .then(() => client.query("SELECT * from recipes"))
-// .then(results => console.table(results.rows))
-// .catch(e => console.log(e))
-// .finally(() => client.end())
-
-// DB Connect String
-
 // Assign Dust Engine to .dust files
 app.engine('dust', cons.dust);
 
-// // Set default extension .dust
-
+// Set default extension .dust
 app.set('view engine', 'dust');
 app.set('views', __dirname + '/views');
 
-// // Set public folder
-
+// Set public folder
 app.use(express.static(path.join(__dirname, 'public')));
 
-// // Body Parser Middleware
+// Body Parser Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 
-// // Paths/Routes
-
+// Paths/Routes
 app.get('/', (req, res) => {
-
     client.query("SELECT * from recipes")
     .then(results => res.render('index', {recipes: results.rows}))
-    // client.end()
-    // res.render('index', {recipes: results.rows});
+    .catch(error => console.log(error))
 })
 
 app.post('/add', (req, res) => {
-    // client.connect()
-    // .then(() => console.log("About to post"))
-    // .then(() => 
-    client.query("INSERT INTO recipes(name, ingredients, directions) VALUES($1, $2, $3)", [req.body.name, req.body.ingredients, req.body.directions])
+    client.query("INSERT INTO recipes(name, ingredients, directions) VALUES($1, $2, $3)",
+    [req.body.name, req.body.ingredients, req.body.directions])
+    .catch(error => console.log(error))
     res.redirect('/')
-    // .catch(e => console.log(e))
 })
-
 
 
 // Server
