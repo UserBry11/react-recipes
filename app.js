@@ -15,6 +15,9 @@ const client = new Client({
     database: 'Recipe DB'
 })
 
+client.connect()
+.then(() => console.log("Connected successfully"))
+
 // execute()
 // async function execute(){
 //     try{
@@ -65,9 +68,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // // Paths/Routes
 
 app.get('/', (req, res) => {
-    client.connect()
-    .then(() => console.log("Connected successfully"))
-    .then(() => client.query("SELECT * from recipes"))
+
+    client.query("SELECT * from recipes")
     .then(results => res.render('index', {recipes: results.rows}))
     // client.end()
     // res.render('index', {recipes: results.rows});
@@ -78,7 +80,7 @@ app.post('/add', (req, res) => {
     // .then(() => console.log("About to post"))
     // .then(() => 
     client.query("INSERT INTO recipes(name, ingredients, directions) VALUES($1, $2, $3)", [req.body.name, req.body.ingredients, req.body.directions])
-    // res.redirect('/')
+    res.redirect('/')
     // .catch(e => console.log(e))
 })
 
