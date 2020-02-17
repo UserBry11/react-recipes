@@ -60,6 +60,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 
 // Paths/Routes
+// Full CRUD functionality
 app.get('/', (req, res) => {
     client.query("SELECT * from recipes")
     .then(results => res.render('index', {recipes: results.rows}))
@@ -73,6 +74,15 @@ app.post('/add', (req, res) => {
     res.redirect('/')
 })
 
+app.delete('/delete/:id', (req, res) => {
+    client.query("DELETE FROM recipes WHERE id = $1", [req.params.id]);
+    res.sendStatus(200);
+})
+
+app.post('/edit', (req, res) => {
+    client.query("UPDATE recipes SET name=$1, ingredients=$2, directions=$3 WHERE id=$4", [req.body.name, req.body.ingredients, req.body.directions, req.body.id])
+    res.redirect('/');
+})
 
 // Server
 app.listen(3000, () => {
